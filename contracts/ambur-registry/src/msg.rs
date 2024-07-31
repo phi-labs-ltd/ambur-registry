@@ -5,7 +5,7 @@ use cosmwasm_std::Addr;
 #[cw_serde]
 pub struct InstantiateMsg {
     pub admin: Option<Addr>,
-    pub registry: Vec<RegistryItem>,
+    pub registry: Vec<Addr>,
 }
 
 #[cw_serde]

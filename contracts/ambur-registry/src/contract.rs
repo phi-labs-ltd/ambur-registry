@@ -30,13 +30,28 @@ pub fn instantiate(
 ) -> Result<Response, ContractError> {
     ADMIN.save(deps.storage, msg.admin.as_ref().unwrap_or(&info.sender))?;
 
-    for item in msg.registry {
-        REGISTRY.save(deps.storage, item.cw721, &item.minter)?;
+    let mut pre_registered: Vec<RegistryItem> = vec![];
+
+    for cw721 in msg.registry {
+        let query_msg: cw721_base::QueryMsg<Extension> = Cw721QueryMsg::Minter {};
+        let query_req = QueryRequest::Wasm(WasmQuery::Smart {
+            contract_addr: cw721.clone().into(),
+            msg: to_json_binary(&query_msg).unwrap(),
+        });
+        let minter: Addr = deps.querier.query(&query_req)?;
+
+        REGISTRY.save(deps.storage, cw721.clone(), &minter)?;
+
+        pre_registered.push(RegistryItem {cw721, minter});
     }
 
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
-    Ok(Response::new())
+    let json_pre_registered: String = serde_json_wasm::to_string(&pre_registered).unwrap_or_default();
+
+    Ok(Response::new()
+        .add_attribute("action", "instantiate")
+        .add_attribute("registered", json_pre_registered))
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
