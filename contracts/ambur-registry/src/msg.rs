@@ -10,10 +10,13 @@ pub struct InstantiateMsg {
 
 #[cw_serde]
 pub enum ExecuteMsg {
-    Register { cw721: Addr, minter: Addr },
+    Register { cw721: Addr },
     Unregister { cw721: Addr },
     SetAdmin { admin: Addr },
 }
+
+#[cw_serde]
+pub struct MigrateMsg {}
 
 #[cw_serde]
 pub struct Page {

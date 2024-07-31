@@ -1,19 +1,22 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    to_json_binary, Addr, Binary, Deps, DepsMut, Env, MessageInfo, Order, Response, StdResult,
+    to_json_binary, Addr, Binary, Deps, DepsMut, Env, Empty, MessageInfo, Order, QueryRequest, 
+    Reply, Response, StdResult, SubMsgResult, WasmQuery,
 };
-// use cw2::set_contract_version;
+use cw2::{get_contract_version, set_contract_version};
+use cw721_base::{msg::QueryMsg as Cw721QueryMsg};
 
 use crate::error::ContractError;
-use crate::msg::{ExecuteMsg, InstantiateMsg, Page, QueryMsg};
+use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, Page, QueryMsg};
 use crate::state::{RegistryItem, ADMIN, REGISTRY};
 
-/*
+pub type Extension = Option<Empty>;
+
 // version info for migration info
-const CONTRACT_NAME: &str = "crates.io:ambur-registry";
+const CONTRACT_NAME: &str = "ambur-registry";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
-*/
+
 
 static LIMIT: u32 = 50;
 static MAX_LIMIT: u32 = 100;
@@ -31,6 +34,8 @@ pub fn instantiate(
         REGISTRY.save(deps.storage, item.cw721, &item.minter)?;
     }
 
+    set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
+
     Ok(Response::new())
 }
 
@@ -46,20 +51,39 @@ pub fn execute(
         return Err(ContractError::Unauthorized {});
     }
 
-    Ok(match msg {
-        ExecuteMsg::Register { cw721, minter } => {
-            REGISTRY.save(deps.storage, cw721, &minter)?;
-            Response::new().add_attribute("action", "register")
+    match msg {
+        ExecuteMsg::Register { cw721 } => {
+            let query_msg: cw721_base::QueryMsg<Extension> = Cw721QueryMsg::Minter {};
+            let query_req = QueryRequest::Wasm(WasmQuery::Smart {
+                contract_addr: cw721.clone().into(),
+                msg: to_json_binary(&query_msg).unwrap(),
+            });
+            let minter: Addr = deps.querier.query(&query_req)?;
+
+            REGISTRY.save(deps.storage, cw721.clone(), &minter)?;
+            
+            Ok(Response::new()
+                .add_attribute("action", "register")
+                .add_attribute("cw721", cw721.to_string())
+                .add_attribute("minter", minter.to_string()))
         }
         ExecuteMsg::Unregister { cw721 } => {
-            REGISTRY.remove(deps.storage, cw721);
-            Response::new().add_attribute("action", "unregister")
+            let minter: Addr = REGISTRY.load(deps.storage, cw721.clone()).unwrap_or(Addr::unchecked(""));
+            REGISTRY.remove(deps.storage, cw721.clone());
+
+            Ok(Response::new()
+                .add_attribute("action", "unregister")
+                .add_attribute("cw721", cw721.to_string())
+                .add_attribute("minter", minter.to_string()))
         }
         ExecuteMsg::SetAdmin { admin } => {
             ADMIN.save(deps.storage, &admin)?;
-            Response::new().add_attribute("action", "set_admin")
+            
+            Ok(Response::new()
+                .add_attribute("action", "set_admin")
+                .add_attribute("admin", admin.to_string()))
         }
-    })
+    }
 }
 
 #[cfg_attr(not(feature = "library"), entry_point)]
@@ -98,4 +122,29 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
         }
         QueryMsg::Registered { cw721 } => to_json_binary(&REGISTRY.has(deps.storage, cw721)),
     }
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn reply(_deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractError> {
+    match msg.result {
+        SubMsgResult::Ok(_) => Ok(Response::default()),
+        SubMsgResult::Err(_) => Err(ContractError::Unauthorized {}),
+    }
+}
+
+#[cfg_attr(not(feature = "library"), entry_point)]
+pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> Result<Response, ContractError> {
+    let original_version = get_contract_version(deps.storage)?;
+    let name = CONTRACT_NAME.to_string();
+    let version = CONTRACT_VERSION.to_string();
+    if original_version.contract != name {
+        return Err(ContractError::InvalidInput {});
+    }
+    if original_version.version >= version {
+        return Err(ContractError::InvalidInput {});
+    }
+
+    set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
+
+    Ok(Response::default())
 }

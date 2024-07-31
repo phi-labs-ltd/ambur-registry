@@ -1,7 +1,10 @@
 [package]
 name = "ambur-registry"
 version = "0.1.0"
-authors = ["Guy Garcia <guy.garcia@protonmail.com>"]
+authors = [
+  "Guy Garcia <guy.garcia@protonmail.com>", 
+  "Drew Taylor <drew.taylor@philabs.xyz>"
+]
 edition = "2021"
 
 exclude = [
@@ -49,6 +52,7 @@ cosmwasm-std = "1.3.1"
 cosmwasm-storage = "1.3.1"
 cw-storage-plus = "1.1.0"
 cw2 = "1.1.0"
+cw721-base = "0.18.0"
 schemars = "0.8.12"
 serde = { version = "1.0.183", default-features = false, features = ["derive"] }
 thiserror = "1.0.44"
