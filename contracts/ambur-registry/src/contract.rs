@@ -5,7 +5,7 @@ use cosmwasm_std::{
     Reply, Response, StdResult, SubMsgResult, WasmQuery,
 };
 use cw2::{get_contract_version, set_contract_version};
-use cw721_base::msg::QueryMsg as Cw721QueryMsg;
+use cw721_base::msg::{MinterResponse, QueryMsg as Cw721QueryMsg};
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, Page, QueryMsg};
@@ -37,8 +37,10 @@ pub fn instantiate(
             contract_addr: cw721.clone().into(),
             msg: to_json_binary(&query_msg).unwrap(),
         });
-        let minter: Addr = deps.querier.query(&query_req)?;
-
+        let minter_resp: MinterResponse = deps.querier.query(&query_req)?;
+        let minter: Addr = deps
+            .api
+            .addr_validate(minter_resp.minter.unwrap_or_default().as_str())?;
         REGISTRY.save(deps.storage, cw721.clone(), &minter)?;
 
         pre_registered.push(RegistryItem { cw721, minter });
@@ -73,8 +75,10 @@ pub fn execute(
                 contract_addr: msg.cw721.clone().into(),
                 msg: to_json_binary(&query_msg).unwrap(),
             });
-            let minter: Addr = deps.querier.query(&query_req)?;
-
+            let minter_resp: MinterResponse = deps.querier.query(&query_req)?;
+            let minter: Addr = deps
+                .api
+                .addr_validate(minter_resp.minter.unwrap_or_default().as_str())?;
             REGISTRY.save(deps.storage, msg.cw721.clone(), &minter)?;
 
             Ok(Response::new()
