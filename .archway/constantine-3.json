@@ -1,0 +1,34 @@
+{
+  "deployments": [
+    {
+      "project": "ambur-registry",
+      "type": "set-metadata",
+      "codeId": 3367,
+      "txhash": "734BEF3672F28EEDD4CBD18A07170822F04C223DC40E430D9ACE4DAF4097C5B8",
+      "contract": "archway188e8uavqz0cudgty2ns938hyu00sv6294wnc8nvqt06s5hy6tmlq4rl0yj",
+      "contractMetadata": {
+        "ownerAddress": "archway1dwmxvmukf2zrqwg2dha2mqyuturdkgg5k8dc4u",
+        "rewardsAddress": "archway1dwmxvmukf2zrqwg2dha2mqyuturdkgg5k8dc4u"
+      }
+    },
+    {
+      "project": "ambur-registry",
+      "type": "instantiate",
+      "codeId": 3367,
+      "txhash": "9119E654F876FC4E41501C04ACD830101B6FF0386FDA70D15D6B1DC1D89FC597",
+      "address": "archway188e8uavqz0cudgty2ns938hyu00sv6294wnc8nvqt06s5hy6tmlq4rl0yj",
+      "admin": "archway1dwmxvmukf2zrqwg2dha2mqyuturdkgg5k8dc4u",
+      "label": "Ambur Registry",
+      "args": {
+        "registry":[]
+      }
+    },
+    {
+      "project": "ambur-registry",
+      "type": "store",
+      "codeId": 3367,
+      "checksum": "b12b0e64b9a6c467eacaab78263e25b1658342c1e9ad4e83e4381f8024e0777f",
+      "txhash": "6002EE70EF8E0F55A89BE32C0CABE3AB6E88DA33B8B17886A7EE29D836E44945"
+    }
+  ]
+}
