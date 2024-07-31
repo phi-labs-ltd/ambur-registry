@@ -1,11 +1,11 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    to_json_binary, Addr, Binary, Deps, DepsMut, Env, Empty, MessageInfo, Order, QueryRequest, 
+    to_json_binary, Addr, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Order, QueryRequest,
     Reply, Response, StdResult, SubMsgResult, WasmQuery,
 };
 use cw2::{get_contract_version, set_contract_version};
-use cw721_base::{msg::QueryMsg as Cw721QueryMsg};
+use cw721_base::msg::QueryMsg as Cw721QueryMsg;
 
 use crate::error::ContractError;
 use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, Page, QueryMsg};
@@ -16,7 +16,6 @@ pub type Extension = Option<Empty>;
 // version info for migration info
 const CONTRACT_NAME: &str = "ambur-registry";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
-
 
 static LIMIT: u32 = 50;
 static MAX_LIMIT: u32 = 100;
@@ -42,12 +41,13 @@ pub fn instantiate(
 
         REGISTRY.save(deps.storage, cw721.clone(), &minter)?;
 
-        pre_registered.push(RegistryItem {cw721, minter});
+        pre_registered.push(RegistryItem { cw721, minter });
     }
 
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
 
-    let json_pre_registered: String = serde_json_wasm::to_string(&pre_registered).unwrap_or_default();
+    let json_pre_registered: String =
+        serde_json_wasm::to_string(&pre_registered).unwrap_or_default();
 
     Ok(Response::new()
         .add_attribute("action", "instantiate")
@@ -76,14 +76,16 @@ pub fn execute(
             let minter: Addr = deps.querier.query(&query_req)?;
 
             REGISTRY.save(deps.storage, cw721.clone(), &minter)?;
-            
+
             Ok(Response::new()
                 .add_attribute("action", "register")
                 .add_attribute("cw721", cw721.to_string())
                 .add_attribute("minter", minter.to_string()))
         }
         ExecuteMsg::Unregister { cw721 } => {
-            let minter: Addr = REGISTRY.load(deps.storage, cw721.clone()).unwrap_or(Addr::unchecked(""));
+            let minter: Addr = REGISTRY
+                .load(deps.storage, cw721.clone())
+                .unwrap_or(Addr::unchecked(""));
             REGISTRY.remove(deps.storage, cw721.clone());
 
             Ok(Response::new()
@@ -93,7 +95,7 @@ pub fn execute(
         }
         ExecuteMsg::SetAdmin { admin } => {
             ADMIN.save(deps.storage, &admin)?;
-            
+
             Ok(Response::new()
                 .add_attribute("action", "set_admin")
                 .add_attribute("admin", admin.to_string()))
