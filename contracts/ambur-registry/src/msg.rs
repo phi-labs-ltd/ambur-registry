@@ -10,9 +10,24 @@ pub struct InstantiateMsg {
 
 #[cw_serde]
 pub enum ExecuteMsg {
-    Register { cw721: Addr },
-    Unregister { cw721: Addr },
-    SetAdmin { admin: Addr },
+    Register(RegisterMsg),
+    Unregister(UnregisterMsg),
+    SetAdmin(SetAdminMsg),
+}
+
+#[cw_serde]
+pub struct RegisterMsg {
+    pub cw721: Addr,
+}
+
+#[cw_serde]
+pub struct UnregisterMsg {
+    pub cw721: Addr,
+}
+
+#[cw_serde]
+pub struct SetAdminMsg {
+    pub admin: Addr,
 }
 
 #[cw_serde]

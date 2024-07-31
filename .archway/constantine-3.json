@@ -2,6 +2,21 @@
   "deployments": [
     {
       "project": "ambur-registry",
+      "type": "migrate",
+      "chainId": "constantine-3",
+      "codeId": 3369,
+      "contract": "archway188e8uavqz0cudgty2ns938hyu00sv6294wnc8nvqt06s5hy6tmlq4rl0yj",
+      "txhash": "F3BFDEA36C17DC5282679BA311E5CE5651FABD5B25A67DAFF94D4CC92CF9E8FF"
+    },
+    {
+      "project": "ambur-registry",
+      "type": "store",
+      "codeId": 3369,
+      "checksum": "35934b5c2432f720c5b594b1952b94bf65ef22a09f201357aec06346af2a17c6",
+      "txhash": "0298184787B33A41443D17FD36F7486B9DEBA55C5DBCC6BC82D3FAC20C69C47C"
+    },
+    {
+      "project": "ambur-registry",
       "type": "set-metadata",
       "codeId": 3367,
       "txhash": "734BEF3672F28EEDD4CBD18A07170822F04C223DC40E430D9ACE4DAF4097C5B8",

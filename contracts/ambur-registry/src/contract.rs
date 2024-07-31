@@ -67,38 +67,38 @@ pub fn execute(
     }
 
     match msg {
-        ExecuteMsg::Register { cw721 } => {
+        ExecuteMsg::Register(msg) => {
             let query_msg: cw721_base::QueryMsg<Extension> = Cw721QueryMsg::Minter {};
             let query_req = QueryRequest::Wasm(WasmQuery::Smart {
-                contract_addr: cw721.clone().into(),
+                contract_addr: msg.cw721.clone().into(),
                 msg: to_json_binary(&query_msg).unwrap(),
             });
             let minter: Addr = deps.querier.query(&query_req)?;
 
-            REGISTRY.save(deps.storage, cw721.clone(), &minter)?;
+            REGISTRY.save(deps.storage, msg.cw721.clone(), &minter)?;
 
             Ok(Response::new()
                 .add_attribute("action", "register")
-                .add_attribute("cw721", cw721.to_string())
+                .add_attribute("cw721", msg.cw721.to_string())
                 .add_attribute("minter", minter.to_string()))
         }
-        ExecuteMsg::Unregister { cw721 } => {
+        ExecuteMsg::Unregister(msg) => {
             let minter: Addr = REGISTRY
-                .load(deps.storage, cw721.clone())
+                .load(deps.storage, msg.cw721.clone())
                 .unwrap_or(Addr::unchecked(""));
-            REGISTRY.remove(deps.storage, cw721.clone());
+            REGISTRY.remove(deps.storage, msg.cw721.clone());
 
             Ok(Response::new()
                 .add_attribute("action", "unregister")
-                .add_attribute("cw721", cw721.to_string())
+                .add_attribute("cw721", msg.cw721.to_string())
                 .add_attribute("minter", minter.to_string()))
         }
-        ExecuteMsg::SetAdmin { admin } => {
-            ADMIN.save(deps.storage, &admin)?;
+        ExecuteMsg::SetAdmin(msg) => {
+            ADMIN.save(deps.storage, &msg.admin)?;
 
             Ok(Response::new()
                 .add_attribute("action", "set_admin")
-                .add_attribute("admin", admin.to_string()))
+                .add_attribute("admin", msg.admin.to_string()))
         }
     }
 }
