@@ -11,14 +11,10 @@
         "register": {
           "type": "object",
           "required": [
-            "cw721",
-            "minter"
+            "cw721"
           ],
           "properties": {
             "cw721": {
-              "$ref": "#/definitions/Addr"
-            },
-            "minter": {
               "$ref": "#/definitions/Addr"
             }
           },
