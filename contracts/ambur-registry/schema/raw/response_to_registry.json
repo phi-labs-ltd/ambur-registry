@@ -1,26 +1,28 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "InstantiateMsg",
+  "title": "Page",
   "type": "object",
   "required": [
-    "registry"
+    "page",
+    "registered",
+    "total"
   ],
   "properties": {
-    "admin": {
-      "anyOf": [
-        {
-          "$ref": "#/definitions/Addr"
-        },
-        {
-          "type": "null"
-        }
-      ]
+    "page": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
     },
-    "registry": {
+    "registered": {
       "type": "array",
       "items": {
         "$ref": "#/definitions/RegistryItem"
       }
+    },
+    "total": {
+      "type": "integer",
+      "format": "uint32",
+      "minimum": 0.0
     }
   },
   "additionalProperties": false,
