@@ -1,0 +1,23 @@
+{
+  "deployments": [
+    {
+      "project": "ambur-registry",
+      "type": "instantiate",
+      "codeId": 592,
+      "txhash": "DCE730CCDC3172D61C4DDC48EF81E9A124C41B5BC93A0112A0CAF7BDD98E3E1F",
+      "address": "archway1mghfz493zgq72dunzdhvcxlpu0asldgzq2lrtypxnxzmxj0rvc0qe0d4mr",
+      "admin": "archway13jwk3zpnkre44ns6h25tcdh4e2hmysmrh94fu9",
+      "label": "ambur_registry",
+      "args": {
+        "registry":[]
+      }
+    },
+    {
+      "project": "ambur-registry",
+      "type": "store",
+      "codeId": 592,
+      "checksum": "cd8dd8e2cda4b29c02e946793c42027c2360d547cb1bfc938bf2cc58c81eb943",
+      "txhash": "727A43DEAAC9A4E2D42A7CCFEBA3F5BD43FA006A046A42C955C54226929CBC1E"
+    }
+  ]
+}
